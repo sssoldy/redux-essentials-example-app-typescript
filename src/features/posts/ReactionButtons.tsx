@@ -17,7 +17,7 @@ interface ReactionButtonsProps {
 const ReactionButton: React.FC<ReactionButtonsProps> = ({ post }) => {
   const dispatch = useAppDispatch()
 
-  const onEmojiClicked = (postId: string, emoji: Emoji) => {
+  const onEmojiClicked = (postId: string, emoji: Emoji): void => {
     dispatch(
       reactionAdded({
         postId,

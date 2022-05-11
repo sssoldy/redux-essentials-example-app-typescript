@@ -1,41 +1,48 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
 
-import { useAppSelector } from '../../app/hooks'
-import PostAuthor from './PostAuthor'
-import ReactionButton from './ReactionButtons'
-import TimeAgo from './TimeAgo'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import Spinner from '../../components/Spinner'
+import PostExcerpt from './PostExcerpt'
+import {
+  fetchPosts,
+  selectAllPosts,
+  selectError,
+  selectPostStatus,
+} from './postsSlice'
 
 interface PostsListProps {}
 
 const PostsList: React.FC<PostsListProps> = () => {
-  // The `state` arg is correctly typed as `RootState` already
-  const posts = useAppSelector(state => state.posts)
+  const dispatch = useAppDispatch()
 
-  // Sort posts in reverse chronological order by datetime string
-  const orderedPosts = posts
-    .slice()
-    .sort((a, b) => b.date.localeCompare(a.date))
+  const posts = useAppSelector(selectAllPosts)
+  const postStatus = useAppSelector(selectPostStatus)
+  const error = useAppSelector(selectError)
 
-  const renderedPosts = orderedPosts.map(post => (
-    <article key={post.id} className="post-excerpt">
-      <h3>{post.title}</h3>
-      <div>
-        <PostAuthor userId={post.user} />
-        <TimeAgo timestamp={post.date} />
-      </div>
-      <p className="post-content">{post.content.substring(0, 100)}</p>
-      <ReactionButton post={post} />
-      <Link to={`/posts/${post.id}`} className="button muted-button">
-        View Post
-      </Link>
-    </article>
-  ))
+  React.useEffect(() => {
+    if (postStatus !== 'idle') return
+    dispatch(fetchPosts())
+  }, [dispatch, postStatus])
+
+  let content
+
+  if (postStatus === 'loading') content = <Spinner text="Loading..." />
+  if (postStatus === 'failed') content = <div>{error}</div>
+  if (postStatus === 'succeeded') {
+    // Sort posts in reverse chronological order by datetime string
+    const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date))
+
+    content = orderedPosts.map(post => (
+      <PostExcerpt key={post.id} post={post} />
+    ))
+  }
 
   return (
     <section className="posts-list">
       <h2>Posts</h2>
-      {renderedPosts}
+      {content}
     </section>
   )
 }

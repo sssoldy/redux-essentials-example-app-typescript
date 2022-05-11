@@ -1,8 +1,8 @@
 import * as React from 'react'
 
 interface SpinnerProps {
-  text: string
-  size: string
+  text?: string
+  size?: string
 }
 
 const Spinner: React.FC<SpinnerProps> = ({ text = '', size = '5em' }) => {

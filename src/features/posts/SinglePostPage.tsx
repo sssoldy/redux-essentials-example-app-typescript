@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useAppSelector } from '../../app/hooks'
 import PostAuthor from './PostAuthor'
+import { selectPostById } from './postsSlice'
 import ReactionButton from './ReactionButtons'
 import TimeAgo from './TimeAgo'
 
@@ -14,9 +15,7 @@ interface SinglePostProps extends RouteComponentProps<MatchParams> {}
 const SinglePostPage: React.FC<SinglePostProps> = ({ match }) => {
   const { postId } = match.params
 
-  const post = useAppSelector(state =>
-    state.posts.find(post => post.id === postId),
-  )
+  const post = useAppSelector(state => selectPostById(state, postId))
 
   if (!post) {
     return (

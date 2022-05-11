@@ -2,7 +2,7 @@ import * as React from 'react'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { postUpdated } from './postsSlice'
+import { postUpdated, selectPostById } from './postsSlice'
 
 interface MatchParams {
   postId: string
@@ -12,9 +12,7 @@ interface EditPostFormProps extends RouteComponentProps<MatchParams> {}
 
 const EditPostForm: React.FC<EditPostFormProps> = ({ match }) => {
   const { postId } = match.params
-  const post = useAppSelector(state =>
-    state.posts.find(post => post.id === postId),
-  )
+  const post = useAppSelector(state => selectPostById(state, postId))
 
   const [title, setTitle] = React.useState(post?.title)
   const [content, setContent] = React.useState(post?.content)
