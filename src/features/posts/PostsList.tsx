@@ -5,8 +5,8 @@ import Spinner from '../../components/Spinner'
 import PostExcerpt from './PostExcerpt'
 import {
   fetchPosts,
-  selectAllPosts,
   selectError,
+  selectPostIds,
   selectPostStatus,
 } from './postsSlice'
 
@@ -15,7 +15,7 @@ interface PostsListProps {}
 const PostsList: React.FC<PostsListProps> = () => {
   const dispatch = useAppDispatch()
 
-  const posts = useAppSelector(selectAllPosts)
+  const orderedPostIds = useAppSelector(selectPostIds)
   const postStatus = useAppSelector(selectPostStatus)
   const error = useAppSelector(selectError)
 
@@ -29,13 +29,8 @@ const PostsList: React.FC<PostsListProps> = () => {
   if (postStatus === 'loading') content = <Spinner text="Loading..." />
   if (postStatus === 'failed') content = <div>{error}</div>
   if (postStatus === 'succeeded') {
-    // Sort posts in reverse chronological order by datetime string
-    const orderedPosts = posts
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date))
-
-    content = orderedPosts.map(post => (
-      <PostExcerpt key={post.id} post={post} />
+    content = orderedPostIds.map(postId => (
+      <PostExcerpt key={postId} postId={postId} />
     ))
   }
 
